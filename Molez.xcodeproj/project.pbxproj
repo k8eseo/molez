@@ -103,8 +103,8 @@
 			isa = PBXGroup;
 			children = (
 				D06517592CE64AC600C96E51 /* AppDelegate.swift */,
-				D065175B2CE64AC600C96E51 /* GameScene.sks */,
-				D065175D2CE64AC600C96E51 /* Actions.sks */,
+				D065178C2CE64AD400C96E51 /* Scenes */,
+				D065178D2CE64ADA00C96E51 /* Actions */,
 				D065175F2CE64AC600C96E51 /* GameScene.swift */,
 				D06517612CE64AC600C96E51 /* GameViewController.swift */,
 				D06517632CE64AC600C96E51 /* Main.storyboard */,
@@ -129,6 +129,22 @@
 				D065177F2CE64AC900C96E51 /* MolezUITestsLaunchTests.swift */,
 			);
 			path = MolezUITests;
+			sourceTree = "<group>";
+		};
+		D065178C2CE64AD400C96E51 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				D065175B2CE64AC600C96E51 /* GameScene.sks */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		D065178D2CE64ADA00C96E51 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				D065175D2CE64AC600C96E51 /* Actions.sks */,
+			);
+			path = Actions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
