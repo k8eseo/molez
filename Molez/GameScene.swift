@@ -9,78 +9,82 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
+    var scoreLabel: SKLabelNode?
+    var timeLabel: SKLabelNode?
+    var mole1: SKSpriteNode?
+    var mole2: SKSpriteNode?
+    var mole3: SKSpriteNode?
+    var mole4: SKSpriteNode?
+    var mole5: SKSpriteNode?
+    var mole6: SKSpriteNode?
+    var mole7: SKSpriteNode?
+    var mole8: SKSpriteNode?
+    var mole9: SKSpriteNode?
+    var startButton: SKSpriteNode?
     
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    var gameModel: GameModel!
     
     override func didMove(to view: SKView) {
+        gameModel = GameModel()
         
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
+        self.scoreLabel = self.childNode(withName: "//scoreLabel") as? SKLabelNode
+        self.timeLabel = self.childNode(withName: "//timeLabel") as? SKLabelNode
+        self.mole1 = self.childNode(withName: "//mole1") as? SKSpriteNode
+        self.mole2 = self.childNode(withName: "//mole2") as? SKSpriteNode
+        self.mole3 = self.childNode(withName: "//mole3") as? SKSpriteNode
+        self.mole4 = self.childNode(withName: "//mole4") as? SKSpriteNode
+        self.mole5 = self.childNode(withName: "//mole5") as? SKSpriteNode
+        self.mole6 = self.childNode(withName: "//mole6") as? SKSpriteNode
+        self.mole7 = self.childNode(withName: "//mole7") as? SKSpriteNode
+        self.mole8 = self.childNode(withName: "//mole8") as? SKSpriteNode
+        self.mole9 = self.childNode(withName: "//mole9") as? SKSpriteNode
+        self.startButton = self.childNode(withName: "//startButton") as? SKSpriteNode
+
+        updateGameCounters()
+        playMusic()
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
+        startButton?.isHidden = false
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
+        for touch in touches {
+            let location = touch.location(in: self)
+            
+            if let node = self.nodes(at: location).first as? SKSpriteNode, node == startButton {
+                startGame()
+            }
         }
+    }
+    
+    func startGame() {
+        gameModel.startGame()
+        startButton?.isHidden = true
         
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
+        updateGameCounters()
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
+    func endGame() {
+        gameModel.gameOver = true
+        startButton?.isHidden = false
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+    func updateGameCounters() {
+        scoreLabel?.fontName = "Impact"
+        timeLabel?.fontName = "Impact"
+        
+        scoreLabel?.text = "Score: \(gameModel.score)"
+        timeLabel?.text = "Time: \(gameModel.remainingTime)"
     }
     
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+    func playMusic() {
+        let music = SKAudioNode(fileNamed: "")
+        music.autoplayLooped = true
+        addChild(music)
     }
-    
+
+    func playHammerEffect() {
+        run(SKAction.playSoundFileNamed("", waitForCompletion: false))
+    }
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
