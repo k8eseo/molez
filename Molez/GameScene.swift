@@ -25,6 +25,8 @@ class GameScene: SKScene {
     var mole9: SKSpriteNode?
     var Play: SKLabelNode?
     
+    var clockNode: SKSpriteNode?
+    
     var gameModel: GameModel!
     var gameTimer: Timer?
     
@@ -40,14 +42,50 @@ class GameScene: SKScene {
         updateGameCounters()
         spawnMoles()
         runTimer()
+        spawnClockRandomly()
         
         music = SKAudioNode(url: Bundle.main.url(forResource: "bgmusic", withExtension: "mp3")!)
         addChild(music)
     }
     
+    func spawnClockRandomly() {
+        let randomInterval = Double(arc4random_uniform(5) + 2)
+        run(SKAction.wait(forDuration: randomInterval)) {
+            self.spawnClock()
+            self.spawnClockRandomly()
+        }
+    }
+    
+    func spawnClock() {
+        guard let clock = clockNode else { return }
+        
+        if gameModel.gameOver { return }
+        
+        // Edit size of clock
+        clock.size = CGSize(width: 75, height: 75)
+        
+        // Location of clock spawning
+        let randomX = CGFloat.random(in: self.frame.minX + 50...self.frame.maxX - 50)
+        let randomY = CGFloat.random(in: self.frame.minY + 50...(self.frame.midY - 50))
+        clock.position = CGPoint(x: randomX, y: randomY)
+        clock.isHidden = false
+
+        // Clock disappears after 1.5 seconds after spawn
+        clock.run(SKAction.sequence([
+            SKAction.wait(forDuration: 1.5),
+            SKAction.run { clock.isHidden = true }
+        ]))
+    }
+    
+    func handleClockTap() {
+        gameModel.remainingTime += 2
+        updateGameCounters()
+        clockNode?.isHidden = true
+    }
+    
     func spawnMoles() {
-        let randomDelay = Double(arc4random_uniform(2))
-        run(SKAction.wait(forDuration: randomDelay)) {
+        let randomDelay = CGFloat.random(in: 0...2)
+        run(SKAction.wait(forDuration: TimeInterval(randomDelay))) {
             self.MoleSpawner()
             self.spawnMolesRepeating()
         }
@@ -155,6 +193,12 @@ class GameScene: SKScene {
         for mole in moleArray {
             mole?.isHidden = true
         }
+        
+        clockNode = SKSpriteNode(imageNamed: "clock")
+        clockNode?.name = "clock"
+        clockNode?.size = CGSize(width: 50, height: 50)
+        clockNode?.isHidden = true
+        self.addChild(clockNode!)
 
         updateGameCounters()
     }
@@ -182,6 +226,11 @@ extension GameScene {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         let nodesAtLocation = self.nodes(at: location)
+        
+        if nodesAtLocation.contains(where: { $0.name == "clock" }) {
+            handleClockTap()
+            return
+        }
         
         // Check if a mole was tapped
         let moleArray = [mole1, mole2, mole3, mole4, mole5, mole6, mole7, mole8, mole9]
