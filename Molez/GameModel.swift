@@ -21,7 +21,7 @@ class GameModel {
     }
     
     func startGame() {
-        score = 0
+        score = 0 // Reset score at the start
         remainingTime = initialTime
         gameOver = false
     }
