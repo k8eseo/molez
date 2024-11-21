@@ -12,7 +12,7 @@ class GameModel {
     var remainingTime: Int
     var gameOver: Bool
     
-    private let initialTime = 15
+    let initialTime = 15
     
     init() {
         self.score = 0

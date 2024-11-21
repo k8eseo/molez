@@ -11,7 +11,6 @@ import GameplayKit
 
 class GameScene: SKScene {
     
-    
     fileprivate var label : SKLabelNode?
     var scoreLabel: SKLabelNode?
     var timeLabel: SKLabelNode?
@@ -27,20 +26,28 @@ class GameScene: SKScene {
     var Play: SKSpriteNode?
     
     var gameModel: GameModel!
-    
+    var gameTimer: Timer?
  
-    
-   func startGame() {
-    gameModel.startGame()
-    Play?.isHidden = true
-        print("Game started")
-      updateGameCounters()
-       let randomDelay = Double(arc4random_uniform(2) + 0) // Random delay 0- 2 seconds
-          run(SKAction.wait(forDuration: randomDelay)) {
-              self.MoleSpawner()
-              self.spawnMolesRepeating()
-          }
-      }
+    func startGame() {
+        print("StartGame called") // Log when method is called
+        gameModel.startGame()
+        print("Game model initialized: \(gameModel.gameOver)") // Check game state
+        Play?.isHidden = true
+        print("Play button hidden: \(Play?.isHidden ?? false)")
+        updateGameCounters()
+        print("Counters updated")
+        
+        let randomDelay = Double(arc4random_uniform(2)) // Random delay 0-2 seconds
+        run(SKAction.wait(forDuration: randomDelay)) {
+            print("Spawning moles")
+            self.MoleSpawner()
+            self.spawnMolesRepeating()
+        }
+        
+        gameTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimeAndGameCounters), userInfo: nil, repeats: true)
+        print("Game timer started")
+    }
+
 
       func spawnMolesRepeating() {
           let spawnInterval = 0.5
@@ -50,13 +57,25 @@ class GameScene: SKScene {
           let repeatAction = SKAction.repeatForever(spawnAction)
           self.run(repeatAction)
       }
-func endGame() {
-      gameModel.gameOver = true
-     Play?.isHidden = false
-    let moleArray = [mole1, mole3, mole5, mole6, mole7, mole8, mole9]
+    
+    func endGame() {
+        // End the game and show the Play button
+        gameTimer?.invalidate()
+        gameTimer = nil
+        gameModel.gameOver = true
+        Play?.isHidden = false // Unhide Play button
+        let moleArray = [mole1, mole2, mole4, mole3, mole5, mole6, mole7, mole8, mole9]
+        
         for mole in moleArray {
-            mole?.isHidden = true
-        }}
+            mole?.isHidden = true // Hide all moles
+        }
+        
+        // Reset game counters
+        gameModel.score = 0
+        gameModel.remainingTime = gameModel.initialTime
+        updateGameCounters()
+        print("Game ended")
+    }
     
 func updateGameCounters() {
        scoreLabel?.fontName = "Impact"
@@ -66,8 +85,17 @@ func updateGameCounters() {
        timeLabel?.text = "Time: \(gameModel.remainingTime)"
 }
     
-    func MoleSpawner(){
-        let moleArray = [mole1, mole2,mole4, mole3, mole5, mole6, mole7, mole8, mole9]
+    @objc func updateTimeAndGameCounters() {
+        gameModel.updateTime()
+        updateGameCounters()
+        if gameModel.gameOver {
+            endGame()
+        }
+    }
+
+    func MoleSpawner() {
+        if !gameModel.gameOver {  // Only spawn moles if the game is active
+            let moleArray = [mole1, mole2, mole4, mole3, mole5, mole6, mole7, mole8, mole9]
             let randomMoleIndex = Int(arc4random_uniform(UInt32(moleArray.count)))
             let moleToSpawn = moleArray[randomMoleIndex]
 
@@ -79,7 +107,9 @@ func updateGameCounters() {
                 run(SKAction.wait(forDuration: 3.0)) {
                     mole.isHidden = true
                 }
-            }    }
+            }
+        }
+    }
     
 func playMusic() {
        let music = SKAudioNode(fileNamed: "")
@@ -104,34 +134,52 @@ func playHammerEffect() {
             return scene
         }
         
-        func setUpScene() {
-            // Get label node from scene and store it for use later
-            self.label = self.childNode(withName: "//Play") as? SKLabelNode
-            gameModel = GameModel()
-                 
-              self.scoreLabel = self.childNode(withName: "//scoreLabel") as? SKLabelNode
-              self.timeLabel = self.childNode(withName: "//timeLabel") as? SKLabelNode
-            self.mole1 = self.childNode(withName: "//mole1") as? SKSpriteNode
-            self.mole2 = self.childNode(withName: "//mole2") as? SKSpriteNode
-            self.mole4 = self.childNode(withName: "//mole4") as? SKSpriteNode
-            self.mole3 = self.childNode(withName: "//mole3") as? SKSpriteNode
-              self.mole5 = self.childNode(withName: "//mole5") as? SKSpriteNode
-        self.mole6 = self.childNode(withName: "//mole6") as? SKSpriteNode
-            self.mole7 = self.childNode(withName: "//mole7") as? SKSpriteNode
-               self.mole8 = self.childNode(withName: "//mole8") as? SKSpriteNode
-               self.mole9 = self.childNode(withName: "//mole9") as? SKSpriteNode
-              self.Play = self.childNode(withName: "//Play") as? SKSpriteNode
-            let moleArray = [mole1, mole2, mole4, mole3, mole5, mole6, mole7, mole8, mole9]
-                for mole in moleArray {
-                    mole?.isHidden = true
-                }
-            Play?.isHidden = false
-            updateGameCounters()
-                playMusic()
-                 
-               Play?.isHidden = false
-            
+    func setUpScene() {
+        // Initialize the game model
+        gameModel = GameModel()
+        
+        // Link score and time labels
+        scoreLabel = self.childNode(withName: "//scoreLabel") as? SKLabelNode
+        timeLabel = self.childNode(withName: "//timeLabel") as? SKLabelNode
+        
+        // Link mole nodes
+        mole1 = self.childNode(withName: "//mole1") as? SKSpriteNode
+        mole2 = self.childNode(withName: "//mole2") as? SKSpriteNode
+        mole3 = self.childNode(withName: "//mole3") as? SKSpriteNode
+        mole4 = self.childNode(withName: "//mole4") as? SKSpriteNode
+        mole5 = self.childNode(withName: "//mole5") as? SKSpriteNode
+        mole6 = self.childNode(withName: "//mole6") as? SKSpriteNode
+        mole7 = self.childNode(withName: "//mole7") as? SKSpriteNode
+        mole8 = self.childNode(withName: "//mole8") as? SKSpriteNode
+        mole9 = self.childNode(withName: "//mole9") as? SKSpriteNode
+
+        // Link Play button
+        Play = self.childNode(withName: "//Play") as? SKSpriteNode
+
+        // Debugging: Check if Play button is found
+        if Play == nil {
+            print("Play node not found in the scene!")
+        } else {
+            print("Play node found: \(Play?.name ?? "Unnamed")")
         }
+
+        // Ensure Play button is visible initially
+        Play?.isHidden = false
+        print("Play button set up and visible: \(Play?.isHidden == false)")
+
+        // Hide all moles at the start of the game
+        let moleArray = [mole1, mole2, mole3, mole4, mole5, mole6, mole7, mole8, mole9]
+        for mole in moleArray {
+            mole?.isHidden = true
+        }
+
+        // Update initial game counters (score and time)
+        updateGameCounters()
+
+        // Optionally start background music
+        playMusic()
+    }
+
         
         override func didMove(to view: SKView) {
             
@@ -149,18 +197,29 @@ func playHammerEffect() {
     extension GameScene {
 
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            if let label = self.label {
-               
+            guard let touch = touches.first else { return }
+            let location = touch.location(in: self)
+            let nodesAtLocation = self.nodes(at: location)
+            
+            // Check if the Play button was tapped
+            if nodesAtLocation.contains(where: { $0.name == "Play" }) {
+                print("Play button tapped")
+                print("Play button is hidden: \(Play?.isHidden ?? true)")
+                print("Game model gameOver state: \(gameModel.gameOver)")
                 
-                if Play?.isHidden != false{
-                    label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
+                // Force visibility check
+                if Play?.isHidden == false || true { // Allow game to start regardless of visibility
+                    print("Forcing game start")
+                    Play?.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
                     Play?.isHidden = true
                     startGame()
+                } else {
+                    print("Play button tap ignored due to state")
                 }
-               
-           }
-            
+            }
         }
+
+
         
         override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
            
@@ -177,10 +236,3 @@ func playHammerEffect() {
        
     }
     #endif
-
-    
-    
-    
-    
-    
-//}
