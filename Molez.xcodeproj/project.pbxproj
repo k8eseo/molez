@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A08790682CEFD0E500C81683 /* tapeffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A08790672CEFD0E500C81683 /* tapeffect.mp3 */; };
+		A087906A2CEFD17300C81683 /* bgmusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A08790692CEFD17300C81683 /* bgmusic.mp3 */; };
 		B73D829B2CED6B9400F13F4E /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B73D829A2CED6B9400F13F4E /* Launch Screen.storyboard */; };
 		D065175A2CE64AC600C96E51 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06517592CE64AC600C96E51 /* AppDelegate.swift */; };
 		D065175C2CE64AC600C96E51 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D065175B2CE64AC600C96E51 /* GameScene.sks */; };
@@ -41,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A08790672CEFD0E500C81683 /* tapeffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = tapeffect.mp3; sourceTree = "<group>"; };
+		A08790692CEFD17300C81683 /* bgmusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgmusic.mp3; sourceTree = "<group>"; };
 		B73D829A2CED6B9400F13F4E /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		D06517562CE64AC600C96E51 /* Molez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Molez.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D06517592CE64AC600C96E51 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -85,6 +89,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A08790662CEFD0C600C81683 /* game-assets */ = {
+			isa = PBXGroup;
+			children = (
+				A08790692CEFD17300C81683 /* bgmusic.mp3 */,
+				A08790672CEFD0E500C81683 /* tapeffect.mp3 */,
+			);
+			path = "game-assets";
+			sourceTree = "<group>";
+		};
 		D065174D2CE64AC600C96E51 = {
 			isa = PBXGroup;
 			children = (
@@ -118,6 +131,7 @@
 				D06517662CE64AC800C96E51 /* Assets.xcassets */,
 				D06517682CE64AC800C96E51 /* LaunchScreen.storyboard */,
 				B73D829A2CED6B9400F13F4E /* Launch Screen.storyboard */,
+				A08790662CEFD0C600C81683 /* game-assets */,
 			);
 			path = Molez;
 			sourceTree = "<group>";
@@ -265,8 +279,10 @@
 				D065178F2CE6688F00C96E51 /* mole.sks in Resources */,
 				D06517672CE64AC800C96E51 /* Assets.xcassets in Resources */,
 				D065175E2CE64AC600C96E51 /* Actions.sks in Resources */,
+				A08790682CEFD0E500C81683 /* tapeffect.mp3 in Resources */,
 				D065176A2CE64AC800C96E51 /* Base in Resources */,
 				B73D829B2CED6B9400F13F4E /* Launch Screen.storyboard in Resources */,
+				A087906A2CEFD17300C81683 /* bgmusic.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

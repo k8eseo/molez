@@ -27,6 +27,9 @@ class GameScene: SKScene {
     
     var gameModel: GameModel!
     var gameTimer: Timer?
+    
+    var music = SKAudioNode(url: Bundle.main.url(forResource: "bgmusic", withExtension: "mp3")!)
+    var soundEffect = SKAction.playSoundFileNamed("tapeffect", waitForCompletion: false)
  
     func startGame() {
         
@@ -35,15 +38,22 @@ class GameScene: SKScene {
 
         Play?.isHidden = true
         updateGameCounters()
-
-        // Start mole spawning
+        spawnMoles()
+        runTimer()
+        
+        music = SKAudioNode(url: Bundle.main.url(forResource: "bgmusic", withExtension: "mp3")!)
+        addChild(music)
+    }
+    
+    func spawnMoles() {
         let randomDelay = Double(arc4random_uniform(2))
         run(SKAction.wait(forDuration: randomDelay)) {
             self.MoleSpawner()
             self.spawnMolesRepeating()
         }
-
-        // Start game timer
+    }
+    
+    func runTimer() {
         gameTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimeAndGameCounters), userInfo: nil, repeats: true)
         RunLoop.main.add(gameTimer!, forMode: .common)
     }
@@ -68,6 +78,8 @@ class GameScene: SKScene {
         for mole in moleArray {
             mole?.isHidden = true // Hide all moles
         }
+        
+        music.removeFromParent()
 
         gameModel.remainingTime = gameModel.initialTime
         updateGameCounters()
@@ -106,16 +118,6 @@ class GameScene: SKScene {
                 }
             }
         }
-    }
-    
-    func playMusic() {
-        let music = SKAudioNode(fileNamed: "")
-        music.autoplayLooped = true
-        addChild(music)
-    }
-
-    func playHammerEffect() {
-        run(SKAction.playSoundFileNamed("", waitForCompletion: false))
     }
 
     class func newGameScene() -> GameScene {
@@ -159,9 +161,9 @@ class GameScene: SKScene {
     
     func handleMoleTap(_ mole: SKSpriteNode) {
         gameModel.score += 1
+        mole.run(soundEffect)
         updateGameCounters()
         mole.isHidden = true
-        playHammerEffect()
     }
 
     override func didMove(to view: SKView) {
@@ -187,7 +189,7 @@ extension GameScene {
             handleMoleTap(tappedMole)
             return
         }
-                if nodesAtLocation.contains(where: { $0.name == "Play" }) {
+            if nodesAtLocation.contains(where: { $0.name == "Play" }) {
             if Play?.isHidden == false && gameModel.gameOver {
                 Play?.isHidden = true
                 startGame()
